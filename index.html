@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Career Page Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    ul {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Career Page Finder</h1>
+  <p>Enter the homepage URL of a company:</p>
+  <input type="text" id="homepageUrl" placeholder="https://www.example.com" size="40">
+  <button onclick="findCareerPages()">Find Career Pages</button>
+
+  <ul id="results"></ul>
+
+  <script>
+    async function findCareerPages() {
+      const base = document.getElementById('homepageUrl').value.trim().replace(/\/$/, '');
+      const list = document.getElementById('results');
+      list.innerHTML = '';
+
+      if (!base.startsWith('http')) {
+        alert('Please enter a valid URL starting with http:// or https://');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3000/check-career-pages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ baseUrl: base })
+      });
+
+      const data = await response.json();
+      data.validPages.forEach(url => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.textContent = url;
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
